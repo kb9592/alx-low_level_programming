@@ -1,6 +1,6 @@
 #include <stdio.h>
 /**
- * main - entry for a program that prints all possible combinations of single-digit numbers
+ * main - entry point
  * Return: 0 (Success)
  */
 int main(void)
@@ -13,11 +13,11 @@ int main(void)
 		if (n == 57)
 		{
 			continue;
+		}
 			putchar(',');
 			putchar(' ');
-		}
-		putchar('\n');
-
 	}
-	return (0);
+		putchar('\n');
+		return (0);
 }
+	
