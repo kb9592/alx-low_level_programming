@@ -1,6 +1,6 @@
 #include <stdio.h>
 /**
- * main - entry point
+ * main - entry for possible combinations of single-digit numbers
  * Return: 0 (Success)
  */
 int main(void)
@@ -14,10 +14,9 @@ int main(void)
 		{
 			continue;
 		}
-			putchar(',');
-			putchar(' ');
+		putchar(',');
+		putchar(' ');
 	}
-		putchar('\n');
-		return (0);
+	putchar('\n');
+	return (0);
 }
-	
