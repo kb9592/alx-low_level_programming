@@ -14,21 +14,20 @@ int create_file(const char *filename, char *text_content)
 	if (filename == NULL)
 		return (-1);
 
-	newfile = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
-	if (newfile == -1)
-		return (-1);
-
-	units = write(newfile, text_content, range);
-
 	if (text_content != NULL)
 	{
 		for (range = 0; text_content[range];)
 			range++;
 	}
 
+	newfile = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
+	units = write(newfile, text_content, range);
+
+
 	if (newfile == -1 || units == -1)
 		return (-1);
 
 	close(newfile);
+
 	return (1);
 }
