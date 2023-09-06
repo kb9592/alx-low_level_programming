@@ -15,8 +15,11 @@ int create_file(const char *filename, char *text_content)
 		return (-1);
 
 	newfile = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
+	if (newfile == -1)
+		return (-1);
 
 	units = write(newfile, text_content, range);
+
 	if (text_content != NULL)
 	{
 		for (range = 0; text_content[range];)
