@@ -6,9 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void print_osabi
-
-
 /**
  * print_magic - prints magic bytes of the ELF file
  * @headerfile: the pointer for the ELF file
