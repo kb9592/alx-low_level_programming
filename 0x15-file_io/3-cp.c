@@ -6,6 +6,44 @@ char *create_buff(char *file);
 void close_file(int cpfile);
 
 /**
+ * create_buff - to assign 1024 bytes to a buffer
+ * @file: the name of the buffer that stores the chars
+ * Return: points to the new assigned buffer
+ */
+
+char *create_buff(char *file)
+{
+	char *buff;
+
+	buff = malloc(sizeof(char) * 1024);
+
+	if (buff == NULL)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file);
+		exit(99);
+	}
+	return (buff);
+}
+
+/**
+ * close_file - this will close the file descriptors
+ * @cpfile: file descriptor that has to be closed
+ */
+
+void close_file(int cpfile)
+{
+	int k;
+
+	k = close(cpfile);
+
+	if (k == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close cpfile %d\n", cpfile);
+		exit(100);
+	}
+}
+
+/**
  * main - duplicates from the main file
  * @argc: the number of arguments for the program
  * @argv: pointer to the array of arguments
@@ -54,43 +92,4 @@ int main(int argc, char *argv[])
 	close_file(nfile2);
 
 	return (0);
-}
-
-/**
- * create_buff - to assign 1024 bytes to a buffer
- * @file: the name of the buffer that stores the chars
- * Return: points to the new assigned buffer
- */
-
-char *create_buff(char *file)
-{
-	char *buff;
-
-	buff = malloc(sizeof(char) * 1024);
-
-	if (buff == NULL)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file);
-		exit(99);
-	}
-
-	return (buff);
-}
-
-/**
- * close_file - this will close the file descriptors
- * @cpfile: file descriptor that has to be closed
- */
-
-void close_file(int cpfile)
-{
-	int k;
-
-	k = close(cpfile);
-
-	if (k == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close cpfile %d\n", cpfile);
-		exit(100);
-	}
 }
