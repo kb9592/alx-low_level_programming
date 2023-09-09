@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void print_anthr(Elf64_Ehdr headerfile);
+
 /**
  * print_magic - prints magic bytes of the ELF file
  * @headerfile: the pointer for the ELF file
@@ -29,19 +31,18 @@ void print_class(Elf64_Ehdr headerfile)
 	switch (headerfile.e_ident[EI_CLASS])
 	{
 		case ELFCLASSNONE:
-			printf("none\n");
+			printf("none");
 			break;
 
 		case ELFCLASS32:
-			printf("ELF32\n");
+			printf("ELF32");
 			break;
 
 		case ELFCLASS64:
-			printf("ELF64\n");
+			printf("ELF64");
 			break;
-
-			printf("<unknown: %x>\n", headerfile.e_ident[EI_CLASS]);
 	}
+	printf("\n");
 }
 
 /**
@@ -55,13 +56,13 @@ void print_data(Elf64_Ehdr headerfile)
 	switch (headerfile.e_ident[EI_DATA])
 	{
 		case ELFDATA2MSB:
-		printf("2's compliment, big endian");
+			printf("2's compliment, big endian");
 		break;
 		case ELFDATA2LSB:
-		printf("2's compliment, little endian");
+			printf("2's compliment, little endian");
 		break;
 		case ELFDATANONE:
-		printf("none");
+			printf("none");
 		break;
 	}
 	printf("\n");
@@ -72,23 +73,20 @@ void print_data(Elf64_Ehdr headerfile)
  * print_version - this prints ELF header
  * *@headerfile: pointer to ELF array
  */
-
 void print_version(Elf64_Ehdr headerfile)
 {
 	printf(" Version: %d", headerfile.e_ident[EI_VERSION]);
 	switch (headerfile.e_ident[EI_VERSION])
 	{
 		case EV_CURRENT:
-			printf(" (current)\n");
+			printf(" (current)");
 		break;
 		case EV_NONE:
 			printf("%s", "");
 		break;
-
-		default:
-		printf("\n");
 		break;
 	}
+	printf("\n");
 }
 
 /**
@@ -129,10 +127,36 @@ void print_osabi(Elf64_Ehdr headerfile)
 			printf("UNIX - TRU64");
 			break;
 		default:
-			print_osabi(headerfile);
+			print_anthr(headerfile);
 			break;
 	}
 	printf("\n");
+}
+
+/**
+ * print_anthr -this prints in addition
+ * @headerfile: the header of the program
+ */
+void print_anthr(Elf64_Ehdr headerfile)
+{
+	switch (headerfile.e_ident[EI_OSABI])
+	{
+		case ELFOSABI_MODESTO:
+			printf("Novell - Modesto");
+			break;
+		case ELFOSABI_OPENBSD:
+			printf("UNIX - OpenBSD");
+			break;
+		case ELFOSABI_STANDALONE:
+			printf("Standalone APP");
+			break;
+		case ELFOSABI_ARM:
+			printf("ARM");
+			break;
+		default:
+			printf("<unknown: %x>", headerfile.e_ident[EI_OSABI]);
+			break;
+	}
 }
 
 /**
@@ -182,11 +206,10 @@ void print_type(Elf64_Ehdr headerfile)
 }
 
 /**
- * print_entry - prints entry point for ELF header
- * @e_entry: the ELF entry point address
+ * print_entry - prints entry point
+ * @e_entry: the ELF entry point
  * @headerfile: pointer for ELF class array
  */
-
 void print_entry(Elf64_Ehdr headerfile)
 {
 	int k  = 0, range = 0;
@@ -211,21 +234,8 @@ void print_entry(Elf64_Ehdr headerfile)
 			k++;
 		printf("%x", pr[k++]);
 		for (; k <= range; k++)
-			printf("\n");
-	}
-}
-
-/**
- * close_elf - to close the file ELF
- * @elf: the file header
- */
-
-void close_elf(int elf)
-{
-	if (close(elf) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Cannot close the headerfile %d\n", elf);
-		exit(98);
+			printf("%02x", pr[k]);
+		printf("\n");
 	}
 }
 
@@ -234,7 +244,7 @@ void close_elf(int elf)
  *  of the ELF file
  *  @argc: the number of arguments given to the program
  *  @argv: array of pointers
- *  Return: 0 (Success)
+ *  Return: 1 if successful, 0 if fails
  */
 int main(int argc, char **argv)
 {
@@ -243,14 +253,10 @@ int main(int argc, char **argv)
 	ssize_t j;
 
 	if (argc != 2)
-	{
 		dprintf(STDERR_FILENO, "Usage: elf_header elf_filename\n"), exit(98);
-	}
 	i = open(argv[1], O_RDONLY);
 	if (i == -1)
-		dprintf(STDERR_FILENO, "Can't read from the file: %s\n", argv[1]);
-			exit(98);
-
+		dprintf(STDERR_FILENO, "Can't open from the file: %s\n", argv[1]), exit(98);
 	j = read(i, &headerfile, sizeof(headerfile));
 	if (j < 1 || j != sizeof(headerfile))
 		dprintf(STDERR_FILENO, "Cannot read from file: %s\n", argv[1]), exit(98);
@@ -271,6 +277,6 @@ int main(int argc, char **argv)
 	print_type(headerfile);
 	print_entry(headerfile);
 	if (close(i))
-		dprintf(STDERR_FILENO, "Error when closing the file descriptor: %d\n", i), exit(98);
+		dprintf(STDERR_FILENO, "Error when closing the file: %d\n", i), exit(98);
 	return (EXIT_SUCCESS);
 }
