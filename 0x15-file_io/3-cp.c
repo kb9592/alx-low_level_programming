@@ -2,94 +2,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *create_buff(char *file);
-void close_file(int cpfile);
-
 /**
- * create_buff - to assign 1024 bytes to a buffer
- * @file: the name of the buffer that stores the chars
- * Return: points to the new assigned buffer
+ * copen_file - checks for files
+ * @file_from: file to transfer from
+ * @file_to: destination file
+ * @argv: pointer for argument
+ * Return: 0
  */
-
-char *create_buff(char *file)
+void copen_file(int file_from, int file_to, char *argv[])
 {
-	char *buff;
-
-	buff = malloc(sizeof(char) * 1024);
-
-	if (buff == NULL)
+	if (file_from == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file);
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+		exit(98);
+	}
+	if (file_to == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
 		exit(99);
 	}
-	return (buff);
 }
 
 /**
- * close_file - this will close the file descriptors
- * @cpfile: file descriptor that has to be closed
- */
-
-void close_file(int cpfile)
-{
-	int k;
-
-	k = close(cpfile);
-
-	if (k == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close cpfile %d\n", cpfile);
-		exit(100);
-	}
-}
-
-/**
- * main - duplicates from the main file
+ * main - makes checks from files
  * @argc: the number of arguments for the program
- * @argv: pointer to the array of arguments
- * Return: 0 (Success)
+ * @argv: points to arguments vector
+ * Return: Always 0
  */
-
 int main(int argc, char *argv[])
 {
-	int nfile1, nfile2, rd, j;
-	char *buff;
+	int file_from, file_to;
+	int anthr;
+	ssize_t kl, ti;
+	char buffer[1024];
 
 	if (argc != 3)
 	{
-		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		dprintf(STDERR_FILENO, "%s\n", "Usage: cp file_from file_to");
 		exit(97);
 	}
 
-	buff = create_buff(argv[2]);
-	nfile1 = open(argv[1], O_RDONLY);
-	rd = read(nfile1, buff, 1024);
-	nfile2 = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	file_from = open(argv[1], O_RDONLY);
+	file_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC | O_APPEND, 0664);
+	copen_file(file_from, file_to, argv);
 
-	do {
-		if (nfile1 == -1 || rd == -1)
-		{
-			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
-			free(buff);
-			exit(98);
-		}
+	kl = 1024;
+	while (kl == 1024)
+	{
+		kl = read(file_from, buffer, 1024);
+		if (kl == -1)
+			copen_file(-1, 0, argv);
+		ti = write(file_to, buffer, kl);
+		if (ti == -1)
+			copen_file(0, -1, argv);
+	}
 
-		j = write(nfile2, buff, rd);
-		if (nfile2 == -1 || j == -1)
-		{
-			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
-			free(buff);
-			exit(99);
-		}
+	anthr = close(file_from);
+	if (anthr == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", file_from);
+		exit(100);
+	}
 
-		rd = read(nfile1, buff, 1024);
-		nfile2 = open(argv[2], O_WRONLY | O_APPEND);
-
-	} while (rd > 0);
-
-	free(buff);
-	close_file(nfile1);
-	close_file(nfile2);
-
+	anthr = close(file_to);
+	if (anthr == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", file_from);
+		exit(100);
+	}
 	return (0);
 }
