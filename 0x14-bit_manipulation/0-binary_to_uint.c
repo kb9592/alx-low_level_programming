@@ -1,7 +1,8 @@
 #include "main.h"
 
 /**
- * binary_to_unit - this function converts binary numbers to an unsigned int
+ * binary_to_unit - this function converts binary numbers
+ * to an unsigned intiger
  * @b: this points to a string of 0 and 1 characters
  * Return: the converted number. Or 0 if there is more than one
  * characters in the string b, tha is not 0 or 1
