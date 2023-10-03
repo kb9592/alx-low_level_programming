@@ -207,15 +207,15 @@ void print_type(Elf64_Ehdr headerfile)
 
 /**
  * print_entry - prints entry point
- * @e_entry: the ELF entry point
  * @headerfile: pointer for ELF class array
  */
 void print_entry(Elf64_Ehdr headerfile)
 {
-	int k  = 0, range = 0;
+	int k = 0;
+	int range = 0;
 	unsigned char *pr = (unsigned char *)&headerfile.e_entry;
 
-	printf(" The address entry point: 0x");
+	printf("The address entry point: 0x");
 	if (headerfile.e_ident[EI_DATA] != ELFDATA2MSB)
 	{
 		k = headerfile.e_ident[EI_CLASS] == ELFCLASS64 ? 7 : 3;
